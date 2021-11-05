@@ -34,7 +34,7 @@ res.json(persons)
 
 const infosivu = () => {
     const maxId = 1
-    return '<h1>Lets change this</h1>'
+    return `<p>Phonebook has info for ${persons.length} people</p><p>Lets change this</p>`
   }
 
 app.get('/api/info', (req, res) => {
