@@ -25,7 +25,7 @@ let persons = [
   ]
 
 app.get('/', (req, res) => {
-res.send('<h1>Hello World!</h1>')
+res.send('<p>Sovelluksen backend, eli palvelimella oleva toiminnallisuus</p>')
 })
 
 app.get('/api/persons', (req, res) => {
@@ -33,7 +33,6 @@ res.json(persons)
 })
 
 const infosivu = () => {
-    const maxId = 1
     return `<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`
   }
 
@@ -41,6 +40,17 @@ app.get('/api/info', (req, res) => {
     console.log(infosivu())
     res.send(infosivu())
 })
+
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const person = persons.find(person => person.id === id)
+    if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    
+  })
 
 const PORT = 3001
 app.listen(PORT, () => {
