@@ -1,26 +1,27 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 let persons = [
     {
         id: 1,
         name: "Arto Hellas",
-        date: "040-123456"
+        number: "040-123456"
     },
     {
         id: 2,
         name: "Ada Lovelace",
-        date: "39-44-5323523"
+        number: "39-44-5323523"
     },
     {
         id: 3,
         name: "Dan Abranoc",
-        date: "12-43-234345"
+        number: "12-43-234345"
     },
     {
         id: 4,
         name: "Mary Poppen",
-        date: "39-23-6423122"
+        number: "39-23-6423122"
       }   
   ]
 
@@ -58,6 +59,16 @@ app.delete('/api/persons/:id', (request, response) => {
 
   response.status(204).end()
 })
+
+app.post('/api/persons', (request, response) => {
+  const id = Math.floor(Math.random() * 100)
+  const nameandnumber = request.body
+  const person = Object.assign({id: id}, nameandnumber)
+  console.log('person', person)
+  persons = persons.concat(person)
+  response.json(person)
+})
+
 
 const PORT = 3001
 app.listen(PORT, () => {
