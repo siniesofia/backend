@@ -75,10 +75,13 @@ app.post('/api/persons', (request, response) => {
       error: 'number missing' 
     })
   }
+
+  const lista = persons.filter(person => person.name.toLowerCase() === nameandnumber.name.toLowerCase())
+  console.log('lista', lista)
   
-  if (!nameandnumber.number) {
+  if (lista.length !== 0) {
     return response.status(400).json({ 
-      error: 'number missing' 
+      error: 'name must be unique' 
     })
   }
 
