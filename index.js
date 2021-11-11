@@ -2,6 +2,8 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 app.use(express.json())
+const cors = require('cors')
+app.use(cors())
 
 
 morgan.token('person', (request, response) => {
@@ -9,8 +11,6 @@ morgan.token('person', (request, response) => {
 })
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
-
-
 
 let persons = [
     {
@@ -108,7 +108,7 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint)
 
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
 console.log(`Server running on port ${PORT}`)
 })
