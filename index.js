@@ -10,6 +10,18 @@ app.use(cors())
 const Person = require('./models/person')
 const { response } = require('express')
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
+  next(error)
+}
+
 morgan.token('person', (request, response) => {
   return JSON.stringify(request.body)
 })
@@ -111,15 +123,27 @@ app.put('/api/people/:id', (request, response, next) => {
 })
 
 
-app.post('/api/people', (request, response, next) => {
+app.post('/api/people', (request, response) => {
   const body = request.body
 
-  // if (body.name === undefined) {
-  //   return response.status(400).json({ error: 'name missing' })
-  // }
+  if (body.name === undefined) {
+    return response.status(400).json({ error: 'name missing' })
+  }
 
-  // if (body.number === undefined) {
-  //   return response.status(400).json({ error: 'number missing' })
+  if (body.number === undefined) {
+    return response.status(400).json({ error: 'number missing' })
+  }
+  
+  // const id = Math.floor(Math.random() * 100)
+  // const nameandnumber = request.body
+
+  // const lista = people.filter(person => person.name.toLowerCase() === nameandnumber.name.toLowerCase())
+  // console.log('lista', lista)
+  
+  // if (lista.length !== 0) {
+  //   return response.status(400).json({ 
+  //     error: 'name must be unique' 
+  //   })
   // }
 
   const person = new Person({
@@ -127,11 +151,9 @@ app.post('/api/people', (request, response, next) => {
     number: body.number
   })
 
-  person.save()
-    .then(savedPerson => {
-      response.json(savedPerson.toJSON())
-    })
-    .catch(error => next(error))
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 
   // const person = Object.assign({id: id}, nameandnumber)
   // people = people.concat(person)
@@ -139,38 +161,16 @@ app.post('/api/people', (request, response, next) => {
 
 })
 
-  const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
-  
-    
-  app.use(unknownEndpoint)
-
-  const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-  
-    if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    } else if (error.name === 'ValidationError') {
-      return response.status(400).json({ error: error.message })
-    }
-  
-    next(error)
-  }
-  
-  app.use(errorHandler)
 }
 
+app.use(unknownEndpoint)
 
-
-
-
-
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
 console.log(`Server running on port ${PORT}`)
 })
-
-
-
